@@ -36,16 +36,25 @@ Using Resnet50 pre-trained model from `torchvision`
 
 ## How to Run?
 
-Option 1:
+Packaged the code and uploaded into [pypi](https://pypi.org/project/AdNoise/0.0.4/)
+
+**Option 1 (Recommended):**
+- Install the library from pypi `pip install AdNoise`
+- Clone this repository
+- Run the [example notebook](https://github.com/kavetinaveen/AdversarialNoise-Llabs/blob/main/example.ipynb)
+
+The current version only supports the local image paths. If you want to try a new image, save it in your local and update `image_path` and `label` parameters accordingly in the notebook.
+
+**Option 2:**
 - Clone this repository
 - Change your working directory to this repo in your local
 - Enable or disable an attack type by adding or removing from the noise type in the config
 - Run `python AdversarialNoise.py -c "./config.yaml" -i ./../data/input/n01491361_tiger_shark.jpeg -l "tiger shark"`
 - The perturbed images should be saved at `data/output/<input_image_file_name>_<type_of_attack>.jpeg`
 
-Option 2:
-- Install the library from pypi `pip install AdNoise==0.0.1`
-- Prepare the config file in your local
-- Download one sample image to your local
-- 
+If you're using option 2 please make sure your versions match with the below:
+
+- python: `3.11.4`
+- torch: `2.3.1`
+- torchvision: `0.18.1`
 
