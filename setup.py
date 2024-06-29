@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.4' 
+VERSION = '0.0.5' 
 DESCRIPTION = 'Adversarial Noise'
 LONG_DESCRIPTION = 'Introduce adversarial noise into an input image to trick an image classification model into misclassifying it as the desired target class.'
 
