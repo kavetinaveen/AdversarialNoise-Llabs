@@ -33,13 +33,17 @@ class AdversarialNoise:
         self.image_path = image_path
         self.label = label
         self.target = self.labels_df[self.labels_df["label_text"].str.contains(self.label)]["label_digit"].values[0]
-        # Storing hyper-parameters of attack
+        # Storing hyper-parameters of FGSM attack
         self.noise_type = params['noise']['type']
         self.epsilon = params['noise']['FGSM']['epsilon']
-        
+        # Storing hyper-parameters of BIM attack
         self.epsilon_bim = params['noise']['BIM']['epsilon']
         self.alpha = params['noise']['BIM']['alpha']
         self.num_iter = params['noise']['BIM']['iterations']
+        # Storing hyper-parameters of PGD attack
+        self.epsilon_pgd = params['noise']['PGD']['epsilon']
+        self.alpha_pgd = params['noise']['PGD']['alpha']
+        self.num_iter_pgd = params['noise']['PGD']['iterations']
         
     def read_image(self):
         try:
@@ -134,17 +138,25 @@ class AdversarialNoise:
                 self.predict_perturbed_image(perturbed_image, self.target)
                 logging.info('Saving perturbed image')
                 self.save_image(perturbed_image, original_size, "BIM")
+            if "PGD" in self.noise_type:
+                logging.info('Perturbing image with PGD attack')
+                logging.info('====================================================')
+                perturbed_image = attack.pgd_attack(self.model, image, self.target, self.epsilon_pgd, self.alpha_pgd, self.num_iter_pgd)
+                self.predict_perturbed_image(perturbed_image, self.target)
+                logging.info('Saving perturbed image')
+                self.save_image(perturbed_image, original_size, "PGD")
             else:
                 logging.info('Model prediction is incorrect, no need of perturbation')
                 perturbed_image = image
         
 if __name__ == '__main__':
-    params = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
     arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('-c', '--config_path', required=True, help='Provide path to config')
     arg_parser.add_argument('-i', '--image_path', required=True, help='Provide path to image')
     arg_parser.add_argument('-l', '--label', required=True, help='Provide target label')
     
     args = vars(arg_parser.parse_args())
+    params = yaml.load(open(args["config_path"], 'r'), Loader=yaml.FullLoader)
     image_path = args["image_path"]
     label = args["label"]
     noise = AdversarialNoise(params, image_path, label)
