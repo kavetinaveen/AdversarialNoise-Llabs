@@ -32,5 +32,5 @@ PGD is also iterative process, same as BIM. At each iteration, it perturbs the i
 
 ## Model:
 
-Using Resnet50 pre-trained model
+Using Resnet50 pre-trained model from `torchvision`
 
