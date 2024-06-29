@@ -10,6 +10,9 @@ from torchvision import models
 import torchvision.transforms as transforms
 import argparse
 
+import logging
+logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
+
 class AdversarialNoise:
     def __init__(self, params, image_path, label):
         self.model = getattr(models, params['model']['model_name'])(weights=True)
@@ -32,6 +35,7 @@ class AdversarialNoise:
         try:
             image = Image.open(self.image_path)
             original_size = image.size
+            logging.info('Image found, displaying input image')
             # plt.imshow(image)
             # plt.show()
         except:
@@ -52,11 +56,18 @@ class AdversarialNoise:
         
         predictions = self.model(image)
         ce_loss = cross_entropy(predictions, target_class)
+        logging.info(f"Cross Entropy Loss: {ce_loss.item()}")
         
         _, idx = torch.max(predictions, 1)
         prediction_digit = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_digit"].values[0]
+        prediction_text = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_text"].values[0]
+        
+        target_text = self.labels_df[self.labels_df['label_digit'] == target_class.item()]['label_text'].values[0]
+        logging.info(f"Actual: {target_class.item()} - {target_text}")
+        logging.info(f"Prediction: {prediction_digit} - {prediction_text}")
         
         if prediction_digit != target_class.item():
+            logging.info("Model prediction is incorrect, no need of gradient computation")
             return None
         
         self.model.zero_grad()
@@ -68,6 +79,16 @@ class AdversarialNoise:
         perturbation = self.epsilon * grad_data.sign()
         image = image + perturbation
         return image
+    
+    def predict_perturbed_image(self, perturbed_image, target_class):
+        predictions = self.model(perturbed_image)
+        ce_loss = cross_entropy(predictions, torch.tensor([target_class]))
+        logging.info(f"Cross Entropy Loss after perturbation: {ce_loss.item()}")
+        
+        _, idx = torch.max(predictions, 1)
+        prediction_digit = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_digit"].values[0]
+        prediction_text = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_text"].values[0]
+        logging.info(f"Prediction after perturbation: {prediction_digit} - {prediction_text}")
     
     def save_image(self, image, original_size, noise_type):
         assert isinstance(image, torch.Tensor), 'image must be a torch.Tensor'
@@ -85,12 +106,21 @@ class AdversarialNoise:
         # plt.show()
         
     def run(self):
+        logging.info('Reading image')
         image, original_size = self.read_image()
+        logging.info('Computing gradient')
         grad_data = self.compute_grad(image, self.target)
         if grad_data is not None:
             if "FGSM" in self.noise_type:
+                logging.info('Perturbing image with FGSM attack')
+                logging.info('====================================================')
                 perturbed_image = self.fgsm_attack(image, grad_data)
+                self.predict_perturbed_image(perturbed_image, self.target)
+                logging.info('Saving perturbed image')
                 self.save_image(perturbed_image, original_size, "FGSM")
+            else:
+                logging.info('Model prediction is incorrect, no need of perturbation')
+                perturbed_image = image
         
 if __name__ == '__main__':
     params = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
