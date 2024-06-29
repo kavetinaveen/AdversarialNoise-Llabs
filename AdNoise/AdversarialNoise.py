@@ -53,6 +53,12 @@ class AdversarialNoise:
         predictions = self.model(image)
         ce_loss = cross_entropy(predictions, target_class)
         
+        _, idx = torch.max(predictions, 1)
+        prediction_digit = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_digit"].values[0]
+        
+        if prediction_digit != target_class.item():
+            return None
+        
         self.model.zero_grad()
         ce_loss.backward()
         return image.grad.data
@@ -81,9 +87,10 @@ class AdversarialNoise:
     def run(self):
         image, original_size = self.read_image()
         grad_data = self.compute_grad(image, self.target)
-        if "FGSM" in self.noise_type:
-            perturbed_image = self.fgsm_attack(image, grad_data)
-            self.save_image(perturbed_image, original_size, "FGSM")
+        if grad_data is not None:
+            if "FGSM" in self.noise_type:
+                perturbed_image = self.fgsm_attack(image, grad_data)
+                self.save_image(perturbed_image, original_size, "FGSM")
         
 if __name__ == '__main__':
     params = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
