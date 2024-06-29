@@ -1,0 +1,9 @@
+README.md
+setup.py
+AdNoise/AdversarialNoise.py
+AdNoise/AttackMethods.py
+AdNoise/__init__.py
+AdNoise.egg-info/PKG-INFO
+AdNoise.egg-info/SOURCES.txt
+AdNoise.egg-info/dependency_links.txt
+AdNoise.egg-info/top_level.txt

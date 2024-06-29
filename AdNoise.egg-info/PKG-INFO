@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: AdNoise
+Version: 0.0.4
+Summary: Adversarial Noise
+Author: Naveen Kaveti
+Author-email: kaveti.naveenkumar@gmail.com
+Keywords: python,adversarial noise
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Education
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+
+Introduce adversarial noise into an input image to trick an image classification model into misclassifying it as the desired target class.

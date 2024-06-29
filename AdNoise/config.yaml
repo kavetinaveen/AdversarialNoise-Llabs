@@ -1,0 +1,17 @@
+directories:
+  labels: "./../data/input/imagenet_labels.csv" # path to the image-net labels data
+  output: "./../data/output/" # Output directory to save the perturbed image
+model:
+  model_name: "resnet50" # torchvision model name
+noise:
+  type: ["FGSM", "BIM", "PGD"] # Enabling different noise types
+  FGSM:
+    epsilon: 0.01 # Hyper-parameter for FGSM
+  BIM:
+    epsilon: 0.01 # Hyper-parameters for BIM
+    alpha: 0.001
+    iterations: 10
+  PGD:
+    epsilon: 0.01 # Hyper-parameters for PGD
+    alpha: 0.001
+    iterations: 10
