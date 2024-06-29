@@ -11,16 +11,19 @@ import torchvision.transforms as transforms
 import argparse
 
 class AdversarialNoise:
-    def __init__(self, image_path, label):
-        self.model = models.resnet50(weights=True)
+    def __init__(self, params, image_path, label):
+        self.model = getattr(models, params['model']['model_name'])(weights=True)
         self.model.eval()
+        
         self.transform = transforms.Compose([
             # transforms.Resize((224, 224)),
             transforms.ToTensor()
             ])
-        self.labels_df = pd.read_csv("./../data/input/imagenet_labels.csv")
-        self.epsilon = 0.01
-        self.output_dir = "./../data/output/"
+        
+        self.labels_df = pd.read_csv(params['directories']['labels'])
+        self.noise_type = params['noise']['type']
+        self.epsilon = params['noise']['FGSM']['epsilon']
+        self.output_dir = params['directories']['output']
         self.image_path = image_path
         self.label = label
         self.target = self.labels_df[self.labels_df["label_text"].str.contains(self.label)]["label_digit"].values[0]
@@ -78,10 +81,12 @@ class AdversarialNoise:
     def run(self):
         image, original_size = self.read_image()
         grad_data = self.compute_grad(image, self.target)
-        perturbed_image = self.fgsm_attack(image, grad_data)
-        self.save_image(perturbed_image, original_size, "FGSM")
+        if "FGSM" in self.noise_type:
+            perturbed_image = self.fgsm_attack(image, grad_data)
+            self.save_image(perturbed_image, original_size, "FGSM")
         
 if __name__ == '__main__':
+    params = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-i', '--image_path', required=True, help='Provide path to image')
     arg_parser.add_argument('-l', '--label', required=True, help='Provide target label')
@@ -89,5 +94,5 @@ if __name__ == '__main__':
     args = vars(arg_parser.parse_args())
     image_path = args["image_path"]
     label = args["label"]
-    noise = AdversarialNoise(image_path, label)
+    noise = AdversarialNoise(params, image_path, label)
     noise.run()
