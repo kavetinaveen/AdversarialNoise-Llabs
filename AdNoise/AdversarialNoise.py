@@ -81,12 +81,12 @@ class AdversarialNoise:
         prediction_text = self.labels_df[self.labels_df["label_digit"] == idx.item()]["label_text"].values[0]
         
         target_text = self.labels_df[self.labels_df['label_digit'] == target_class.item()]['label_text'].values[0]
-        logging.info(f"Actual: {target_class.item()} - {target_text}")
+        logging.info(f"Specified target: {target_class.item()} - {target_text}")
         logging.info(f"Prediction: {prediction_digit} - {prediction_text}")
         # Skip the perturbation if the prediction is not correct
-        if prediction_digit != target_class.item():
-            logging.info("Model prediction is incorrect, no need of gradient computation")
-            return None
+        # if prediction_digit != target_class.item():
+        #     logging.info("Model prediction is incorrect, no need of gradient computation")
+        #     return None
         
         self.model.zero_grad()
         ce_loss.backward()

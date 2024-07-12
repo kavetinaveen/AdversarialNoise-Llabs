@@ -4,7 +4,7 @@ directories:
 model:
   model_name: "resnet50" # torchvision model name
 noise:
-  type: ["FGSM", "BIM", "PGD"] # Enabling different noise types
+  type: ["PGD"] # Enabling different noise types
   FGSM:
     epsilon: 0.01 # Hyper-parameter for FGSM
   BIM:

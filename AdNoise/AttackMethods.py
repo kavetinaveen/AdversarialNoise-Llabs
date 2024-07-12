@@ -11,7 +11,7 @@ class AttackMethods:
         # Computing perturbations in the direction of the gradient of the loss
         perturbation = epsilon * grad_data.sign()
         # Adding the perturbations to the input image
-        image = image + perturbation
+        image = image - perturbation
         return image
     
     def bim_attack(self, model, image, target_class, epsilon, alpha, num_iter):
