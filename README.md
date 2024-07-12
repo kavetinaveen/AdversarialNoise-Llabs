@@ -49,7 +49,7 @@ The current version only supports the local image paths. If you want to try a ne
 - Clone this repository
 - Change your working directory to this repo in your local
 - Enable or disable an attack type by adding or removing from the noise type in the config
-- Run `python AdversarialNoise.py -c "./config.yaml" -i ./../data/input/n01491361_tiger_shark.jpeg -l "tiger shark"`
+- Run `python AdversarialNoise.py -c "./config.yaml" -i ./../data/input/n01491361_tiger_shark.jpeg -l "robin"`
 - The perturbed images should be saved at `data/output/<input_image_file_name>_<type_of_attack>.jpeg`
 
 If you're using option 2 please make sure your versions match with the below:
